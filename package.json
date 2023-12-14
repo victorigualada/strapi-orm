@@ -25,11 +25,10 @@
     "url": "git+https://github.com/victorigualada/strapi-orm.git"
   },
   "keywords": [
-    "pino",
-    "nestjs",
-    "nest.js",
-    "nest",
-    "logger"
+    "strapi",
+    "orm",
+    "query",
+    "query-builder"
   ],
   "author": "victorigualada <victorigualada@gmail.com> (https://github.com/victorigualada)",
   "license": "MIT",
@@ -38,8 +37,7 @@
   },
   "homepage": "https://github.com/victorigualada/strapi-orm#readme",
   "dependencies": {
-    "qs": "^6.11.2",
-    "reflect-metadata": "^0.1.13"
+    "qs": "^6.11.2"
   },
   "devDependencies": {
     "@types/jest": "^29.5.11",
