@@ -2,6 +2,9 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   modulePaths: ['.'],
+  transform: {
+    '^.+\\.ts?$': 'ts-jest',
+  },
   testPathIgnorePatterns: ['/node_modules/'],
   roots: ['<rootDir>/test/', '<rootDir>/src/'],
   testTimeout: 5000,

@@ -9,16 +9,13 @@ export class StrapiQueryBuilder<T> {
     private readonly requestService: RequestServiceInterface,
   ) {}
 
-  static create<T extends ObjectType>(
-    path: string,
-    requestService: RequestServiceInterface,
-  ): StrapiQueryBuilder<InstanceType<T>> {
-    return new StrapiQueryBuilder(path, requestService)
+  static create<T extends ObjectType>(path: string, requestService: RequestServiceInterface): StrapiQueryBuilder<T> {
+    return new StrapiQueryBuilder<T>(path, requestService)
   }
 
   select(fields: string | string[]): SelectQueryBuilder<T> {
     const executeCallback: SelectExecuteCallback = this.requestService.get.bind(this.requestService)
-    return SelectQueryBuilder.create(this.path, executeCallback, fields)
+    return SelectQueryBuilder.create<T>(this.path, executeCallback, fields)
   }
 
   insert(): StrapiQueryBuilder<T> {
