@@ -2,7 +2,7 @@ import { ObjectType, SelectExecuteCallback, StrapiFilter, StrapiQuery, StrapiSor
 import mergeDeep, { resolvePopulatedRelation } from '../utils/objects'
 
 export class SelectQueryBuilder<T> {
-  private selectFields: string[] = []
+  private readonly selectFields: string[] = []
   private populateFields: Record<string, StrapiQuery> = {}
   private whereFields: Record<string, StrapiFilter> = {}
 
@@ -14,12 +14,8 @@ export class SelectQueryBuilder<T> {
     this.selectFields = this.selectFields.concat(fields)
   }
 
-  static create<T extends ObjectType>(
-    path: string,
-    execute: SelectExecuteCallback,
-    fields: string | string[],
-  ): SelectQueryBuilder<InstanceType<T>> {
-    return new SelectQueryBuilder(path, execute, fields)
+  static create<T>(path: string, execute: SelectExecuteCallback, fields: string | string[]): SelectQueryBuilder<T> {
+    return new SelectQueryBuilder<T>(path, execute, fields)
   }
 
   populate(
@@ -28,7 +24,7 @@ export class SelectQueryBuilder<T> {
     filters?: Record<string, StrapiFilter>,
     sort?: Record<string, StrapiSort>,
   ): SelectQueryBuilder<T> {
-    const fieldsToPopulate = field.split('.').reverse()
+    const fieldsToPopulate = field.toString().split('.').reverse()
 
     fieldsToPopulate.reduce(
       (acc, curr, index, array) => {

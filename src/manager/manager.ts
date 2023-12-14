@@ -4,6 +4,8 @@ import { RequestService } from '../service/request.service'
 import { RequestServiceInterface } from '../service/request.service.interface'
 import { ConnectionConfig, ObjectType } from '../types'
 
+import { RepositoryManager } from './repository-manager'
+
 export class Manager {
   private static metadataStorage = new Map<string, StrapiEntityOptions>()
   private readonly requestService: RequestServiceInterface
@@ -22,6 +24,13 @@ export class Manager {
 
   getRepository<Entity extends ObjectType>(target: InstanceType<Entity>): StrapiRepository<InstanceType<Entity>> {
     const entityOptions = Manager.getEntityMetadata(target)
-    return new StrapiRepository(entityOptions, this.requestService)
+    let repository = RepositoryManager.getRepository(target)
+
+    if (!repository) {
+      repository = new StrapiRepository<InstanceType<Entity>>(entityOptions, this.requestService)
+      RepositoryManager.addRepository(target, repository)
+    }
+
+    return repository
   }
 }
