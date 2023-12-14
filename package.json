@@ -39,7 +39,7 @@
   "homepage": "https://github.com/victorigualada/strapi-orm#readme",
   "dependencies": {
     "qs": "^6.11.2",
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.2.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.11",
