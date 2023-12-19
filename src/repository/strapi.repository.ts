@@ -1,5 +1,5 @@
 import { StrapiQueryBuilder } from '../query-builders/strapi.query-builder'
-import { RequestServiceInterface } from '../service/request.service.interface'
+import { RequestService } from '../service/request.service'
 import { ObjectType } from '../types'
 
 interface StrapiEntityOptions {
@@ -9,7 +9,7 @@ interface StrapiEntityOptions {
 export class StrapiRepository<T> {
   constructor(
     private readonly entityOptions: StrapiEntityOptions,
-    private readonly requestService: RequestServiceInterface,
+    private readonly requestService: RequestService,
   ) {}
 
   createQueryBuilder<T extends ObjectType>(): StrapiQueryBuilder<InstanceType<T>> {

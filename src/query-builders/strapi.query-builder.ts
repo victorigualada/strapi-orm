@@ -1,4 +1,4 @@
-import { RequestServiceInterface } from '../service/request.service.interface'
+import { RequestService } from '../service/request.service'
 import { ObjectType, SelectExecuteCallback } from '../types'
 
 import { SelectQueryBuilder } from './select.query-builder'
@@ -6,10 +6,10 @@ import { SelectQueryBuilder } from './select.query-builder'
 export class StrapiQueryBuilder<T> {
   constructor(
     private readonly path: string,
-    private readonly requestService: RequestServiceInterface,
+    private readonly requestService: RequestService,
   ) {}
 
-  static create<T extends ObjectType>(path: string, requestService: RequestServiceInterface): StrapiQueryBuilder<T> {
+  static create<T extends ObjectType>(path: string, requestService: RequestService): StrapiQueryBuilder<T> {
     return new StrapiQueryBuilder<T>(path, requestService)
   }
 

@@ -1,17 +1,16 @@
 import { StrapiEntityOptions } from '../decorator/strapi-entity.decorator'
 import { StrapiRepository } from '../repository/strapi.repository'
-import { RequestService } from '../service/request.service'
-import { RequestServiceInterface } from '../service/request.service.interface'
+import { StrapiRequestService } from '../service/strapi-request.service'
 import { ConnectionConfig, ObjectType } from '../types'
 
 import { RepositoryManager } from './repository-manager'
 
 export class Manager {
   private static metadataStorage = new Map<string, StrapiEntityOptions>()
-  private readonly requestService: RequestServiceInterface
+  private readonly requestService: StrapiRequestService
 
   constructor(config: ConnectionConfig) {
-    this.requestService = new RequestService(config)
+    this.requestService = new StrapiRequestService(config)
   }
 
   static getEntityMetadata<Entity extends ObjectType>(target: InstanceType<Entity>) {

@@ -1,6 +1,7 @@
 import { Manager, StrapiRepository } from '../../src'
-import { RequestService } from '../../src/service/request.service'
-import { ConnectionConfig } from '../../src/types/request.types'
+import { RepositoryManager } from '../../src/manager/repository-manager'
+import { StrapiRequestService } from '../../src/service/strapi-request.service'
+import { ConnectionConfig, ObjectType } from '../../src/types'
 import { TestEntity } from '../mock/test.entity'
 
 jest.mock('../../src/service/request.service')
@@ -9,7 +10,14 @@ describe('public interface', () => {
   let repository: StrapiRepository<TestEntity>
 
   beforeEach(() => {
+    /*
+      We can't hold a reference to the mocked RequestService so we need to instantiate a new Manager and clear the
+      repositories map before each test.
+      https://jestjs.io/docs/es6-class-mocks#calling-jestmock-with-the-module-factory-parameter
+     */
     const manager = new Manager({} as ConnectionConfig)
+    RepositoryManager['repositories'] = new Map<string, StrapiRepository<InstanceType<ObjectType>>>()
+
     repository = manager.getRepository(TestEntity)
   })
 
@@ -19,7 +27,7 @@ describe('public interface', () => {
     await repository.find()
 
     // assert
-    const requestServiceInstance = (RequestService as jest.Mock).mock.instances[0]
+    const requestServiceInstance = (StrapiRequestService as jest.Mock).mock.instances[0]
     expect(requestServiceInstance.get).toHaveBeenCalled()
   })
 
@@ -31,7 +39,7 @@ describe('public interface', () => {
     await repository.findById(id)
 
     // assert
-    const requestServiceInstance = (RequestService as jest.Mock).mock.instances[0]
+    const requestServiceInstance = (StrapiRequestService as jest.Mock).mock.instances[0]
     expect(requestServiceInstance.get).toHaveBeenCalledWith(`test/${id}`)
   })
 
@@ -43,7 +51,7 @@ describe('public interface', () => {
     await repository.create(testEntity)
 
     // assert
-    const requestServiceInstance = (RequestService as jest.Mock).mock.instances[0]
+    const requestServiceInstance = (StrapiRequestService as jest.Mock).mock.instances[0]
     expect(requestServiceInstance.post).toHaveBeenCalledWith(`test`, testEntity)
   })
 
@@ -56,7 +64,7 @@ describe('public interface', () => {
     await repository.update(id, testEntity)
 
     // assert
-    const requestServiceInstance = (RequestService as jest.Mock).mock.instances[0]
+    const requestServiceInstance = (StrapiRequestService as jest.Mock).mock.instances[0]
     expect(requestServiceInstance.put).toHaveBeenCalledWith(`test/${id}`, testEntity)
   })
 })
