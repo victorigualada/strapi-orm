@@ -119,7 +119,7 @@ const users = await respository
   .select(['firstName', 'lastName'])
   .populate('role')
   .populate('role.scope', '*', { name: { $in: ['read-only', 'read-write'] } })
-  .filter('role.scope.name', 'read-only')
+  .where('role.scope.name', 'read-only')
   .getMany()
 ```
 
@@ -169,55 +169,55 @@ Creates a new `Manager` instance.
 | accessToken | string  | Access token of the Strapi API                                                        | true     |         |
 | flatten     | boolean | Flatten the response from the Strapi API, removing the attributes and data properties | false    | false   |
 
-#### `manager.getRepository(target: Entity): Repository<Entity>`
+#### `manager.getRepository(target: Entity): Repository<Entity>`:
 
-Returns a new Repository instance for the given entity.
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Returns a new Repository instance for the given entity.
 
 ### Repository
 
 #### `repository.findById(id: number | string): Promise<T>`
 
-Finds an entity by its id.
+<ul>Finds an entity by its id.</ul>
 
 #### `repository.create(entity: Entity): Promise<Entity>`
 
-Creates a new entity.
+<ul>Creates a new entity.</ul>
 
 #### `repository.update(id: number | string, entity: Entity): Promise<Entity>`
 
-Updates an entity by its id.
+<ul>Updates an entity by its id.</ul>
 
 #### `repository.delete(id: number | string): Promise<Entity>`
 
-Deletes an entity by its id.
+<ul>Deletes an entity by its id.</ul>
 
 #### `repository.createQueryBuilder(): StrapiQueryBuilder<Entity>`
 
-Creates a new QueryBuilder instance for the given entity.
+<ul>Creates a new QueryBuilder instance for the given entity.</ul>
 
 ### QueryBuilder
 
 #### `queryBuilder.select(fields: string | string[]): SelectQueryBuilder<Entity>`
 
-Selects the fields to be returned by the query.
+<ul>Selects the fields to be returned by the query.</ul>
 
 #### `queryBuilder.populate(relation: string, fields?: string | string[], filter?: StrapiFilter, sort?: StrapiSort): SelectQueryBuilder<Entity>`
 
-Populates the given relation of the entity. Optionally, you can select the fields to be returned and filter the populated entities.
+<ul>Populates the given relation of the entity. Optionally, you can select the fields to be returned and filter the populated entities.
 To populate a nested relation, use dot notation: `queryBuilder.populate('role.scope')`. There is no limit of nested relations depth.
+The `populate` method can be called multiple times to populate multiple relations.
+Essentially it's a `LEFT JOIN` query, where filters can be passed to filter the populated entities, but it won't filter 
+out the main entity. For that use the `where` method below.</ul>
 
-#### `queryBuilder.filter(field: string, value: any): SelectQueryBuilder<Entity>`
+#### `queryBuilder.where(field: string, filters: StrapiFilter): SelectQueryBuilder<Entity>`
 
-Filters the entities by the given field and value.
-
-#### `queryBuilder.sort(field: string, order: 'asc' | 'desc'): SelectQueryBuilder<Entity>`
-
-Sorts the entities by the given field and order.
+<ul>Filters the entities by the given field and value. This follows the same syntax as the Strapi API filters.
+Available filters are defined in the [StrapiFilter](src/types/filter.type.ts) type</ul>
 
 #### `queryBuilder.getMany(): Promise<Entity[]>`
 
-Executes the query and returns the entities.
+<ul>Executes the query and returns the entities.</ul>
 
 #### `queryBuilder.getOne(): Promise<Entity>`
 
-Executes the query and returns the first entity.
+<ul>Executes the query and returns the first entity.</ul>
