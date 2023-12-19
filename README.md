@@ -157,12 +157,11 @@ class CustomRequestService extends RequestService {
 
 ### Manager
 
-#### `new Manager(options: ConnectionConfig)`
+#### `new Manager(options: ConnectionConfig, requestService?: RequestService)`
 
-Creates a new Manager instance.
-ConnectionConfig is an object with the following properties:
+Creates a new `Manager` instance.
 
-# A markdown table that describes the ConnectionConfig object
+`ConnectionConfig` is an object with the following properties:
 
 | Property    | Type    | Description                                                                           | Required | Default |
 | ----------- | ------- | ------------------------------------------------------------------------------------- | -------- | ------- |
