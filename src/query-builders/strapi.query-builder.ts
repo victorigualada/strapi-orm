@@ -3,22 +3,22 @@ import { ObjectType, SelectExecuteCallback } from '../types'
 
 import { SelectQueryBuilder } from './select.query-builder'
 
-export class StrapiQueryBuilder<T> {
+export class StrapiQueryBuilder<Entity> {
   constructor(
     private readonly path: string,
     private readonly requestService: RequestService,
   ) {}
 
-  static create<T extends ObjectType>(path: string, requestService: RequestService): StrapiQueryBuilder<T> {
-    return new StrapiQueryBuilder<T>(path, requestService)
+  static create<Entity extends ObjectType>(path: string, requestService: RequestService): StrapiQueryBuilder<Entity> {
+    return new StrapiQueryBuilder<Entity>(path, requestService)
   }
 
-  select(fields: string | string[]): SelectQueryBuilder<T> {
+  select(fields: string | string[]): SelectQueryBuilder<Entity> {
     const executeCallback: SelectExecuteCallback = this.requestService.get.bind(this.requestService)
-    return SelectQueryBuilder.create<T>(this.path, executeCallback, fields)
+    return SelectQueryBuilder.create<Entity>(this.path, executeCallback, fields)
   }
 
-  insert(): StrapiQueryBuilder<T> {
+  insert(): StrapiQueryBuilder<Entity> {
     throw new Error('Not implemented')
   }
 }

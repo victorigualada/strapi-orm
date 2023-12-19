@@ -1,7 +1,7 @@
-import { ObjectType, SelectExecuteCallback, StrapiFilter, StrapiQuery, StrapiSort } from '../types'
-import mergeDeep, { resolvePopulatedRelation } from '../utils/objects'
+import { FindOptionsWhere, ObjectType, SelectExecuteCallback, StrapiFilter, StrapiQuery, StrapiSort } from '../types'
+import { mergeDeep, resolvePopulatedRelation } from '../utils/objects'
 
-export class SelectQueryBuilder<T> {
+export class SelectQueryBuilder<Entity> {
   private readonly selectFields: string[] = []
   private populateFields: Record<string, StrapiQuery> = {}
   private whereFields: Record<string, StrapiFilter> = {}
@@ -14,8 +14,12 @@ export class SelectQueryBuilder<T> {
     this.selectFields = this.selectFields.concat(fields)
   }
 
-  static create<T>(path: string, execute: SelectExecuteCallback, fields: string | string[]): SelectQueryBuilder<T> {
-    return new SelectQueryBuilder<T>(path, execute, fields)
+  static create<Entity>(
+    path: string,
+    execute: SelectExecuteCallback,
+    fields: string | string[],
+  ): SelectQueryBuilder<Entity> {
+    return new SelectQueryBuilder<Entity>(path, execute, fields)
   }
 
   populate(
@@ -23,7 +27,7 @@ export class SelectQueryBuilder<T> {
     childFields: string | string[] = '*',
     filters?: Record<string, StrapiFilter>,
     sort?: Record<string, StrapiSort>,
-  ): SelectQueryBuilder<T> {
+  ): SelectQueryBuilder<Entity> {
     const fieldsToPopulate = field.toString().split('.').reverse()
 
     fieldsToPopulate.reduce(
@@ -59,7 +63,7 @@ export class SelectQueryBuilder<T> {
     return this
   }
 
-  where(field: string, filters: StrapiFilter): SelectQueryBuilder<T> {
+  where(field: string, filters: StrapiFilter): SelectQueryBuilder<Entity> {
     const fieldsToFilter = field.split('.').reverse()
     fieldsToFilter.reduce(
       (acc, curr, index, array) => {
@@ -84,23 +88,30 @@ export class SelectQueryBuilder<T> {
     return this
   }
 
-  async getOne<T extends ObjectType>(): Promise<InstanceType<T>> {
+  async getOne<Entity extends ObjectType>(): Promise<InstanceType<Entity>> {
     const response = await this.execute()
 
-    return response[0]
+    return response ? response[0] : null
   }
 
-  async getMany<T extends ObjectType>(): Promise<InstanceType<T>[]> {
+  async getMany<Entity extends ObjectType>(): Promise<InstanceType<Entity>[]> {
     return this.execute()
   }
 
-  async execute<T extends ObjectType>(): Promise<InstanceType<T>> {
+  async execute<Entity extends ObjectType>(): Promise<InstanceType<Entity>> {
     const params = {
       fields: this.selectFields,
       populate: this.populateFields,
       filters: this.whereFields,
     }
 
-    return this.executeCallback<InstanceType<T>>(this.path, params)
+    return this.executeCallback<InstanceType<Entity>>(this.path, params)
+  }
+
+  setFindOptions<Entity extends ObjectType>(where: FindOptionsWhere<Entity>): SelectQueryBuilder<Entity> {
+    Object.keys(where).forEach(key => {
+      this.where(key, { $eq: where[key] })
+    })
+    return this
   }
 }

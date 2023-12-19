@@ -9,7 +9,7 @@ export class StrapiRequestService extends RequestService {
     super(config)
   }
 
-  async request<T>(path: string, requestOptions: RequestOptions): Promise<T> {
+  async request<Entity>(path: string, requestOptions: RequestOptions): Promise<Entity> {
     const { method, body, query, headers } = requestOptions
     const stringQuery = query ? stringify(query, { encodeValuesOnly: true }) : ''
 
@@ -44,7 +44,7 @@ export class StrapiRequestService extends RequestService {
     }
   }
 
-  handleResponse<T>(jsonResponse: unknown): Promise<T> {
+  handleResponse<Entity>(jsonResponse: unknown): Promise<Entity> {
     return this.config.flatten ? this.flatten(jsonResponse) : jsonResponse
   }
 }

@@ -1,7 +1,7 @@
 import { Manager, StrapiRepository } from '../../src'
 import { RepositoryManager } from '../../src/manager/repository-manager'
 import { StrapiRequestService } from '../../src/service/strapi-request.service'
-import { ConnectionConfig, ObjectType } from '../../src/types'
+import { ConnectionConfig, ObjectType, StrapiQuery } from '../../src/types'
 import { TestEntity } from '../mock/test.entity'
 
 jest.mock('../../src/service/request.service')
@@ -31,16 +31,40 @@ describe('public interface', () => {
     expect(requestServiceInstance.get).toHaveBeenCalled()
   })
 
+  test('StrapiRepository#findBy calls RequestService#get with url and query filter', async () => {
+    // arrange
+    const query: StrapiQuery = { fields: ['*'], filters: { id: { $eq: 2 } }, populate: {} }
+
+    // act
+    await repository.findBy({ id: 2 })
+
+    // assert
+    const requestServiceInstance = (StrapiRequestService as jest.Mock).mock.instances[0]
+    expect(requestServiceInstance.get).toHaveBeenCalledWith(`test`, query)
+  })
+
   test('StrapiRepository#findById calls RequestService#get with url', async () => {
     // arrange
     const id = 1
 
     // act
-    await repository.findById(id)
+    await repository.findOneById(id)
 
     // assert
     const requestServiceInstance = (StrapiRequestService as jest.Mock).mock.instances[0]
     expect(requestServiceInstance.get).toHaveBeenCalledWith(`test/${id}`)
+  })
+
+  test('StrapiRepository#findOneBy calls RequestService#get with url and query filter', async () => {
+    // arrange
+    const query: StrapiQuery = { fields: ['*'], filters: { id: { $eq: 1 } }, populate: {} }
+
+    // act
+    await repository.findOneBy({ id: 1 })
+
+    // assert
+    const requestServiceInstance = (StrapiRequestService as jest.Mock).mock.instances[0]
+    expect(requestServiceInstance.get).toHaveBeenCalledWith(`test`, query)
   })
 
   test('StrapiRepository#create calls RequestService#post with entity', async () => {

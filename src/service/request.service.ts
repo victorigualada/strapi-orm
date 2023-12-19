@@ -4,33 +4,33 @@ export abstract class RequestService {
   protected constructor(protected readonly config: ConnectionConfig) {}
 
   protected abstract getAuthHeaders(): Record<string, string>
-  protected abstract handleResponse<T>(jsonResponse: unknown): Promise<T>
-  protected abstract request<T>(path: string, requestOptions: RequestOptions): Promise<T>
+  protected abstract handleResponse<Entity>(jsonResponse: unknown): Promise<Entity>
+  protected abstract request<Entity>(path: string, requestOptions: RequestOptions): Promise<Entity>
 
-  async get<T>(path: string, query?: object): Promise<T> {
+  async get<Entity>(path: string, query?: object): Promise<Entity> {
     const options: RequestOptions = {
       method: HttpMethods.GET,
       query,
     }
-    return this.request<T>(path, options)
+    return this.request<Entity>(path, options)
   }
 
-  async post<T>(path: string, body?: unknown, query?: object): Promise<T> {
+  async post<Entity>(path: string, body?: unknown, query?: object): Promise<Entity> {
     const options: RequestOptions = {
       method: HttpMethods.POST,
       body,
       query,
     }
-    return this.request<T>(path, options)
+    return this.request<Entity>(path, options)
   }
 
-  async put<T>(path: string, body?: unknown, query?: object): Promise<T> {
+  async put<Entity>(path: string, body?: unknown, query?: object): Promise<Entity> {
     const options: RequestOptions = {
       method: HttpMethods.PUT,
       body,
       query,
     }
-    return this.request<T>(path, options)
+    return this.request<Entity>(path, options)
   }
 
   protected flattenArray(obj) {

@@ -83,9 +83,11 @@ export class User {
 ```ts
 import { Manager } from '@vicodes/strapi-orm'
 import { User } from './user.entity'
+import { StrapiRepository } from './strapi.repository'
 
-const roleRepository = manager.getRepository(Role)
-const scopeRepository = manager.getRepository(Scope)
+// It's important to type the repository with the entity type to get maximum of type safety
+const roleRepository: StrapiRepository<Role> = manager.getRepository(Role)
+const scopeRepository: StrapiRepository<Scope> = manager.getRepository(Scope)
 
 const scope = await scopeRepository.findById(1)
 
@@ -105,6 +107,7 @@ and sort without the hustle of creating the query string or object.
 ```ts
 import { Manager } from '@vicodes/strapi-orm'
 import { User } from './user.entity'
+import { StrapiRepository } from './strapi.repository'
 
 const manager = new Manager({
   baseUrl: 'http://localhost:1337/api',
@@ -112,7 +115,7 @@ const manager = new Manager({
   flatten: true,
 })
 
-const respository = manager.getRepository(User)
+const respository: StrapiRepository<User> = manager.getRepository(User)
 
 const users = await respository
   .createQueryBuilder()
@@ -142,12 +145,12 @@ class CustomRequestService extends RequestService {
     }
   }
 
-  handleResponse<T>(jsonResponse: unknown): Promise<T> {
+  handleResponse<Entity>(jsonResponse: unknown): Promise<Entity> {
     // Do something with the response, like modifying the data
     // By default here is where the response is flattened
   }
 
-  request<T>(path: string, requestOptions: RequestOptions): Promise<T> {
+  request<Entity>(path: string, requestOptions: RequestOptions): Promise<Entity> {
     // Use your custom request library, like axios
   }
 }
@@ -175,9 +178,24 @@ Creates a new `Manager` instance.
 
 ### Repository
 
-#### `repository.findById(id: number | string): Promise<T>`
+#### `repository.find(): Promise<Entity[]>`
+
+<ul>Return all entities</ul>
+
+#### `repository.findBy(where: FindOptionsWhere<Entity>): Promise<Entity[]>`
+
+<ul>Return all entities that match the given where clause. 
+The were clause is an key/value object where the key is the field name and the value is the value to match.
+For example: `repository.findBy({ name: 'John' })` will return all entities where the name is John.
+</ul>
+
+#### `repository.findOneById(id: number | string): Promise<Entity>`
 
 <ul>Finds an entity by its id.</ul>
+
+#### `repository.findOneBy(where: FindOptionsWhere<Entity>): Promise<Entity[]>`
+
+<ul>Same as `#findBy` but it will return only one element. The first in the list</ul>
 
 #### `repository.create(entity: Entity): Promise<Entity>`
 
@@ -193,7 +211,7 @@ Creates a new `Manager` instance.
 
 #### `repository.createQueryBuilder(): StrapiQueryBuilder<Entity>`
 
-<ul>Creates a new QueryBuilder instance for the given entity.</ul>
+<ul>Creates a new `StrapiQueryBuilder` instance for the given entity.</ul>
 
 ### QueryBuilder
 

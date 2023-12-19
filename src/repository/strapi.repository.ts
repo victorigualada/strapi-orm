@@ -1,34 +1,42 @@
 import { StrapiQueryBuilder } from '../query-builders/strapi.query-builder'
 import { RequestService } from '../service/request.service'
-import { ObjectType } from '../types'
+import { FindOptionsWhere, ObjectType } from '../types'
 
 interface StrapiEntityOptions {
   path: string
 }
 
-export class StrapiRepository<T> {
+export class StrapiRepository<Entity> {
   constructor(
     private readonly entityOptions: StrapiEntityOptions,
     private readonly requestService: RequestService,
   ) {}
 
-  createQueryBuilder<T extends ObjectType>(): StrapiQueryBuilder<InstanceType<T>> {
-    return StrapiQueryBuilder.create<InstanceType<T>>(this.entityOptions.path, this.requestService)
+  createQueryBuilder<Entity extends ObjectType>(): StrapiQueryBuilder<InstanceType<Entity>> {
+    return StrapiQueryBuilder.create<InstanceType<Entity>>(this.entityOptions.path, this.requestService)
   }
 
-  find(): Promise<T> {
-    return this.requestService.get<T>(this.entityOptions.path)
+  find(): Promise<Entity> {
+    return this.requestService.get<Entity>(this.entityOptions.path)
   }
 
-  findById(id: unknown): Promise<T> {
-    return this.requestService.get<T>(this.entityOptions.path + '/' + id)
+  findBy(where: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[]): Promise<Entity[]> {
+    return this.createQueryBuilder().select('*').setFindOptions(where).getMany()
   }
 
-  create(entity: T): Promise<T> {
-    return this.requestService.post<T>(this.entityOptions.path, entity)
+  findOneBy(where: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[]): Promise<Entity | null> {
+    return this.createQueryBuilder().select('*').setFindOptions(where).getOne()
   }
 
-  update(id: unknown, entity: Partial<T>): Promise<T> {
-    return this.requestService.put<T>(this.entityOptions.path + '/' + id, entity)
+  findOneById(id: unknown): Promise<Entity> {
+    return this.requestService.get<Entity>(this.entityOptions.path + '/' + id)
+  }
+
+  create(entity: Entity): Promise<Entity> {
+    return this.requestService.post<Entity>(this.entityOptions.path, entity)
+  }
+
+  update(id: unknown, entity: Partial<Entity>): Promise<Entity> {
+    return this.requestService.put<Entity>(this.entityOptions.path + '/' + id, entity)
   }
 }
