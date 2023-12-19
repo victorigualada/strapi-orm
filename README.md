@@ -17,12 +17,12 @@
   <img alt="Supported platforms: Express & Fastify" src="https://img.shields.io/badge/platforms-Express%20%26%20Fastify-green" />
 </p>
 
-<p align="center">✨✨✨ StrapiORM for backend requests inspired by TypeORM that <b>abstracts filtering, population and sorting</b> ✨✨✨</p>
+<p align="center">✨ StrapiORM for backend requests inspired by TypeORM that <b>abstracts filtering, population and sorting</b> ✨</p>
 
 ## Motivation
 
 Strapi is a great headless CMS, and a good entry point for start-ups. Sometimes it might become a core part of the
-project, but it can substitute a strong backend application. This is where StrapiORM comes in. It allows the backend
+project, but it can't substitute a strong backend application. This is where StrapiORM comes in. It allows the backend
 applications to treat Strapi as a database, and abstracts the filtering, population and sorting of the entities.
 
 ## Install
