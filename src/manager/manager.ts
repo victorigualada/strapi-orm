@@ -18,18 +18,12 @@ export class Manager {
   private static metadataStorage = new Map<string, MetadataOptions>()
   private readonly requestService: StrapiRequestService
 
-  constructor(
-    private readonly config: ConnectionConfig,
-    private readonly logger?: any, // eslint-disable-line @typescript-eslint/no-explicit-any
-  ) {
-    if (!logger) {
-      this.logger = console
-    }
+  constructor(private readonly config: ConnectionConfig) {
     this.requestService = new StrapiRequestService(config)
   }
 
-  static async start(config: ConnectionConfig, logger?: unknown): Promise<Manager> {
-    const manager = new Manager(config, logger)
+  static async start(config: ConnectionConfig): Promise<Manager> {
+    const manager = new Manager(config)
 
     const [schemaEntities, paths] = await manager.importEntities()
 

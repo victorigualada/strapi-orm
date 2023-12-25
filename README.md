@@ -17,13 +17,15 @@
   <img alt="Supported platforms: Express & Fastify" src="https://img.shields.io/badge/platforms-Express%20%26%20Fastify-green" />
 </p>
 
-<p align="center">✨ StrapiORM for backend requests inspired by TypeORM that <b>abstracts filtering, population and sorting</b> ✨</p>
+<p align="center">✨ StrapiORM for backend requests inspired by TypeORM that <b>abstracts synchronization, filtering, 
+population and sorting</b> ✨</p>
 
 ## Motivation
 
 Strapi is a great headless CMS, and a good entry point for start-ups. Sometimes it might become a core part of the
-project, but it can't substitute a strong backend application. This is where StrapiORM comes in. It allows the backend
-applications to treat Strapi as a database, and abstracts the filtering, population and sorting of the entities.
+project, and grow considerably, reaching data complexity levels hard to query and maintain. This is where StrapiORM
+comes in. It allows any backend or frontend applications to treat Strapi as a database, and abstract the
+synchronization, filtering, population and sorting of the entities.
 
 ## Install
 
@@ -44,7 +46,12 @@ const manager = new Manager({
 ```
 
 Then create the entities that represent Strapi Content Types.
-Use the `StrapiEntity` decorator to specify the URI path of the Strapi Content Type, either as a string or as a
+You can use the `synchronize` option of the `Manager` to automatically create the entities from the Strapi API schema.
+This will create all the entities, components, dynamic zones, relations and enums that are defined in the Strapi Content
+Manager in the corresponding directories at the root of the project. Then they can be moved to the desired location and
+next time the application runs, entities will be automatically detected and updated
+
+To do it manually, use the `StrapiEntity` decorator to specify the URI path of the Strapi Content Type, either as a string or as a
 `StrapiEntityOptions` object with the following properties:
 
 ```ts
@@ -113,6 +120,8 @@ const manager = new Manager({
   baseUrl: 'http://localhost:1337/api',
   accessToken: 'super-secret-token',
   flatten: true,
+  entities: ['src/**/*.entity.ts', 'src/**/*.component.ts'],
+  synchronize: true,
 })
 
 const respository: StrapiRepository<User> = manager.getRepository(User)
@@ -166,11 +175,14 @@ Creates a new `Manager` instance.
 
 `ConnectionConfig` is an object with the following properties:
 
-| Property    | Type    | Description                                                                           | Required | Default |
-| ----------- | ------- | ------------------------------------------------------------------------------------- | -------- | ------- |
-| baseUrl     | string  | Base url of the Strapi API                                                            | true     |         |
-| accessToken | string  | Access token of the Strapi API                                                        | true     |         |
-| flatten     | boolean | Flatten the response from the Strapi API, removing the attributes and data properties | false    | false   |
+| Property       | Type             | Description                                                                                                                                                                                                                                                                                                 | Required | Default |
+| -------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------- |
+| baseUrl        | string           | Base url of the Strapi API                                                                                                                                                                                                                                                                                  | true     |         |
+| accessToken    | string           | Access token of the Strapi API                                                                                                                                                                                                                                                                              | true     |         |
+| flatten        | boolean          | Flatten the response from the Strapi API, removing the attributes and data properties                                                                                                                                                                                                                       | false    | false   |
+| entities       | string, string[] | glob pattern that matches the entities and components (e.g.: `src/**/*.entitiy.ts`)                                                                                                                                                                                                                         | true     |         |
+| validateSchema | boolean          | either to validate or not the existing entities against the Strapi API schema using URI `/api/content-manager/content-types`                                                                                                                                                                                | false    | false   |
+| synchronize    | boolean          | either to synchronize or not the existing entities against the Strapi API schema using URI `/api/content-manager/content-types`. Only enable this options if you want your entities to automatically update when there is a change in the database. Only enable this options in non-production environments | false    | false   |
 
 #### `manager.getRepository(target: Entity): Repository<Entity>`:
 

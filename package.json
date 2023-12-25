@@ -28,7 +28,10 @@
     "strapi",
     "orm",
     "query",
-    "query-builder"
+    "query builder",
+    "synchronization",
+    "validation",
+    "strapi types"
   ],
   "author": "victorigualada <victorigualada@gmail.com> (https://github.com/victorigualada)",
   "license": "MIT",

@@ -1,4 +1,5 @@
 import fs from 'fs'
+import path from 'path'
 
 import { FieldOptions } from '../decorator'
 
@@ -45,13 +46,17 @@ export class EntityGenerator {
     }
   }
 
-  generateClassEntityFile(schema: StrapiSchema, path?: string): void {
+  generateClassEntityFile(schema: StrapiSchema, filePath?: string): void {
     if (this.options.dryRun) return
     if (['admin', 'upload'].includes(schema.plugin)) return
 
-    const existingImports = path
+    const enumPath = path.join(__dirname, 'enums')
+    const entityPath = path.join(__dirname, 'entities')
+    const componentPath = path.join(__dirname, 'components')
+
+    const existingImports = filePath
       ? fs
-          .readFileSync(path, { encoding: 'utf-8' })
+          .readFileSync(filePath, { encoding: 'utf-8' })
           .split('\n')
           .filter(line => line.startsWith('import'))
       : null
@@ -60,24 +65,27 @@ export class EntityGenerator {
     if (!classEntity) return
 
     if (enums.length) {
-      fs.mkdirSync('src/enums', { recursive: true })
+      fs.mkdirSync(enumPath, { recursive: true })
       enums.forEach(enumStr => {
         const enumName = enumStr.split(' ')[2]
-        fs.writeFileSync(`src/enums/${this.pascalToKebab(enumName)}.enum.ts`, enumStr)
+        fs.writeFileSync(path.join(enumPath, `${this.pascalToKebab(enumName)}.enum.ts`), enumStr)
       })
     }
 
     // It's a Component
     if (schema.category) {
-      fs.mkdirSync('src/components', { recursive: true })
-      fs.writeFileSync(`src/components/${this.dotNotationToKebab(schema.uid)}.component.ts`, classEntity)
+      fs.mkdirSync(componentPath, { recursive: true })
+      fs.writeFileSync(
+        path.join(componentPath, `src/components/${this.dotNotationToKebab(schema.uid)}.component.ts`),
+        classEntity,
+      )
       return
     }
 
-    if (!path) {
-      fs.mkdirSync('src/entities', { recursive: true })
+    if (!filePath) {
+      fs.mkdirSync(entityPath, { recursive: true })
     }
-    fs.writeFileSync(path || `src/entities/${schema.apiID}.entity.ts`, classEntity)
+    fs.writeFileSync(filePath || path.join(entityPath, `src/entities/${schema.apiID}.entity.ts`), classEntity)
   }
 
   generateAllEntitiesAndComponents(contentTypes: StrapiSchema[], components: StrapiSchema[]): void {

@@ -9,15 +9,9 @@ import { isObject } from './objects'
  * Loads all exported classes from the given directory.
  */
 export async function importClassesFromDirectories(
-  //logger: Logger,
   directories: string[],
   formats = ['.js', '.mjs', '.cjs', '.ts', '.mts', '.cts'],
 ): Promise<[Function[], string[]]> {
-  const logger = console
-  const logLevel = 'info'
-  const classesNotFoundMessage = 'No classes were found using the provided glob pattern: '
-  const classesFoundMessage = 'All classes found using provided glob pattern'
-
   function loadFileClasses(exported: any, allLoaded: Function[]) {
     if (typeof exported === 'function') {
       allLoaded.push(exported)
@@ -34,11 +28,6 @@ export async function importClassesFromDirectories(
     return allDirs.concat(globSync(normalPath))
   }, [] as string[])
 
-  if (directories.length > 0 && allFiles.length === 0) {
-    logger.log(logLevel, `${classesNotFoundMessage} "${directories}"`)
-  } else if (allFiles.length > 0) {
-    logger.log(logLevel, `${classesFoundMessage} "${directories}" : "${allFiles}"`)
-  }
   const dirPromises = allFiles
     .filter(file => {
       const dtsExtension = file.substring(file.length - 5, file.length)
