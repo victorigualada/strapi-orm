@@ -17,6 +17,8 @@ describe('StrapiRepository', () => {
     // arrange
     const expectedEntityOptions = {
       path: 'test',
+      plugin: 'my-plugin',
+      uid: 'plugin::my-plugin.test',
     }
     const manager = new Manager({} as ConnectionConfig)
 
