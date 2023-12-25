@@ -1,3 +1,4 @@
+import { StrapiComponentOptions } from '../decorator/strapi-component.decorator'
 import { StrapiQueryBuilder } from '../query-builders/strapi.query-builder'
 import { RequestService } from '../service/request.service'
 import { FindOptionsWhere, ObjectType } from '../types'
@@ -8,7 +9,7 @@ interface StrapiEntityOptions {
 
 export class StrapiRepository<Entity> {
   constructor(
-    private readonly entityOptions: StrapiEntityOptions,
+    private readonly entityOptions: StrapiEntityOptions | StrapiComponentOptions,
     private readonly requestService: RequestService,
   ) {}
 
