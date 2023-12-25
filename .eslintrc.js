@@ -18,6 +18,7 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.js'],
   rules: {
+    '@typescript-eslint/ban-types': 'off',
     '@typescript-eslint/no-explicit-any': ['error', { fixToUnknown: true, ignoreRestArgs: false }],
     '@typescript-eslint/no-floating-promises': ['error', { ignoreIIFE: true }],
     '@typescript-eslint/no-unused-vars': [

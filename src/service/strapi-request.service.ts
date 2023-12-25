@@ -13,7 +13,9 @@ export class StrapiRequestService extends RequestService {
     const { method, body, query, headers } = requestOptions
     const stringQuery = query ? stringify(query, { encodeValuesOnly: true }) : ''
 
-    const response = await fetch(`${this.config.baseUrl}/${path}?${stringQuery}`, {
+    const url = `${this.config.baseUrl}/${path}?${stringQuery}`.replace(/([^:]\/)\/+/g, '$1')
+
+    const response = await fetch(new URL(url), {
       method,
       body: body ? JSON.stringify(body) : undefined,
       headers: {

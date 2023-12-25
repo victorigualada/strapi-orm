@@ -33,6 +33,19 @@ export abstract class RequestService {
     return this.request<Entity>(path, options)
   }
 
+  flatten(obj) {
+    if (Array.isArray(obj)) {
+      return this.flattenArray(obj)
+    }
+    if (obj && obj.data) {
+      return this.flattenData(obj)
+    }
+    if (obj && obj.attributes) {
+      return this.flattenAttrs(obj)
+    }
+    return obj
+  }
+
   protected flattenArray(obj) {
     return obj.map(e => this.flatten(e))
   }
@@ -50,18 +63,5 @@ export abstract class RequestService {
       id: obj.id,
       ...attrs,
     }
-  }
-
-  protected flatten(obj) {
-    if (Array.isArray(obj)) {
-      return this.flattenArray(obj)
-    }
-    if (obj && obj.data) {
-      return this.flattenData(obj)
-    }
-    if (obj && obj.attributes) {
-      return this.flattenAttrs(obj)
-    }
-    return obj
   }
 }

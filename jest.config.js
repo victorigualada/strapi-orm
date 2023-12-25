@@ -6,18 +6,24 @@ module.exports = {
     '^.+\\.ts?$': 'ts-jest',
   },
   testPathIgnorePatterns: ['/node_modules/'],
-  roots: ['<rootDir>/test/', '<rootDir>/src/'],
+  roots: ['<rootDir>/src', '<rootDir>/test'],
   testTimeout: 5000,
   coverageReporters: ['lcov', 'json', 'text', 'text-summary'],
   clearMocks: true,
-  collectCoverageFrom: ['src/**/*.ts', 'temporal/**/*.ts'],
+  collectCoverageFrom: [
+    '<rootDir>/**/*.ts',
+    '!<rootDir>/src/types/*',
+    '!<rootDir>/src/generator/strapi-schema.type.ts',
+    '!<rootDir>/test/**/*',
+    '!<rootDir>/src/index.ts',
+  ],
+  coverageProvider: 'v8',
   coverageThreshold: {
-    // TODO: keep bumping this as we improve it until we reach 80 for each
     global: {
-      branches: 38,
-      functions: 50,
-      lines: 51,
-      statements: 51,
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80,
     },
   },
 }

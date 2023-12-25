@@ -1,14 +1,14 @@
 import { StrapiQuery } from '../types'
 
-export function isObject(item) {
+export function isObjectOrArray(item) {
   return item && typeof item === 'object' && !Array.isArray(item)
 }
 
 export function mergeDeep(target, source) {
   const output = Object.assign({}, target)
-  if (isObject(target) && isObject(source)) {
+  if (isObjectOrArray(target) && isObjectOrArray(source)) {
     Object.keys(source).forEach(key => {
-      if (isObject(source[key])) {
+      if (isObjectOrArray(source[key])) {
         if (!(key in target)) Object.assign(output, { [key]: source[key] })
         else output[key] = mergeDeep(target[key], source[key])
       } else {
@@ -27,4 +27,8 @@ export function resolvePopulatedRelation(array: string[], obj: StrapiQuery): Str
   return path.split('.').reduce(function (prev, curr) {
     return prev[curr] || prev.populate[curr]
   }, obj)
+}
+
+export function isObject(val: unknown): val is NonNullable<unknown> {
+  return val !== null && typeof val === 'object'
 }
