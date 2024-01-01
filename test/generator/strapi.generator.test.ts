@@ -249,7 +249,7 @@ describe('EntityGenerator', () => {
       2,
       expect.any(String),
       expect.stringContaining(
-        "@Field({ type: 'enumeration', required: true, enum: 'ContentTypeEnumAttribute' })\n  enumAttribute: ContentTypeEnumAttribute",
+        "@Field({ type: 'enumeration', required: true, enum: ContentTypeEnumAttribute })\n  enumAttribute: ContentTypeEnumAttribute",
       ),
     )
     expect(mkdirSyncMock).toHaveBeenCalled()
