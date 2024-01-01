@@ -1,27 +1,35 @@
-export type StrapiType =
-  | 'string'
-  | 'text'
-  | 'richtext'
-  | 'email'
-  | 'password'
-  | 'integer'
-  | 'biginteger'
-  | 'decimal'
-  | 'float'
-  | 'number'
-  | 'date'
-  | 'datetime'
-  | 'media'
-  | 'json'
-  | 'boolean'
-  | 'enumeration'
-  | 'uid'
-  | 'component'
-  | 'relation'
-  | 'dynamiczone'
+export enum AttributeType {
+  String = 'string',
+  Text = 'text',
+  RichText = 'richtext',
+  Email = 'email',
+  Password = 'password',
+  Integer = 'integer',
+  BigInteger = 'biginteger',
+  Decimal = 'decimal',
+  Float = 'float',
+  Number = 'number',
+  Date = 'date',
+  DateTime = 'datetime',
+  Media = 'media',
+  Json = 'json',
+  Boolean = 'boolean',
+  Enumeration = 'enumeration',
+  UID = 'uid',
+  Component = 'component',
+  Relation = 'relation',
+  DynamicZone = 'dynamiczone',
+}
+
+export enum RelationType {
+  OneToOne = 'oneToOne',
+  OneToMany = 'oneToMany',
+  ManyToOne = 'manyToOne',
+  ManyToMany = 'manyToMany',
+}
 
 export type StrapiAttribute = {
-  type: StrapiType
+  type: AttributeType
   minLength?: number
   unique?: boolean
   configurable?: boolean

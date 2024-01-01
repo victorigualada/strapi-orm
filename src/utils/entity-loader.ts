@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types */
 import path from 'path'
 
-import { globSync } from 'glob'
+import { glob } from 'glob'
 
 import { isObject } from './objects'
 
@@ -12,7 +11,7 @@ export async function importClassesFromDirectories(
   directories: string[],
   formats = ['.js', '.mjs', '.cjs', '.ts', '.mts', '.cts'],
 ): Promise<[Function[], string[]]> {
-  function loadFileClasses(exported: any, allLoaded: Function[]) {
+  function loadFileClasses(exported: Function | Array<unknown> | Object, allLoaded: Function[]) {
     if (typeof exported === 'function') {
       allLoaded.push(exported)
     } else if (Array.isArray(exported)) {
@@ -25,7 +24,7 @@ export async function importClassesFromDirectories(
 
   const allFiles = directories.reduce((allDirs, dir) => {
     const normalPath = path.normalize(dir)
-    return allDirs.concat(globSync(normalPath))
+    return allDirs.concat(glob.sync(normalPath))
   }, [] as string[])
 
   const dirPromises = allFiles

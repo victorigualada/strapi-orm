@@ -131,7 +131,7 @@ const users = await respository
   .select(['firstName', 'lastName'])
   .populate('role')
   .populate('role.scope', '*', { name: { $in: ['read-only', 'read-write'] } })
-  .where('role.scope.name', 'read-only')
+  .where('role.scope.name', { $eq: 'read-only' })
   .getMany()
 ```
 

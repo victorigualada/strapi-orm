@@ -2,20 +2,20 @@
   "name": "@vicodes/strapi-orm",
   "version": "0.2.0",
   "description": "Strapi ORM",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "jest --verbose -i --detectOpenHandles --forceExit",
     "lint": "tsc --noemit && eslint \"{src,test}/**/*.ts\"",
     "format": "lint-staged",
     "prebuild": "rimraf dist",
     "build": "tsc -p tsconfig.build.json",
-    "prepublishOnly": "npm run build && cp -r ./dist/* . && rm -rf ./dist",
+    "prepublishOnly": "npm run build",
     "postpublish": "git clean -fd"
   },
-  "files": [
-    "dist"
-  ],
   "engineStrict": true,
   "engines": {
     "node": ">= 14"
@@ -39,7 +39,7 @@
     "url": "https://github.com/victorigualada/strapi-orm/issues"
   },
   "homepage": "https://github.com/victorigualada/strapi-orm#readme",
-  "dependencies": {
+  "peerDependencies": {
     "qs": "^6.11.2"
   },
   "devDependencies": {

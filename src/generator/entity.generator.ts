@@ -3,7 +3,7 @@ import path from 'path'
 
 import { FieldOptions } from '../decorator'
 
-import { StrapiAttribute, StrapiSchema } from './strapi-schema.type'
+import { AttributeType, RelationType, StrapiAttribute, StrapiSchema } from './strapi-schema.type'
 
 export type GenerationOptions = {
   decorate?: boolean
@@ -23,6 +23,8 @@ const ORM_DECORATORS = [
   '@ManyToOne',
   '@ManyToMany',
 ]
+
+const packageName = '@vicodes/strapi-orm'
 
 export class EntityGenerator {
   private static readonly COMPONENT_SUFFIX = 'Component'
@@ -50,9 +52,11 @@ export class EntityGenerator {
     if (this.options.dryRun) return
     if (['admin', 'upload'].includes(schema.plugin)) return
 
-    const enumPath = path.join(__dirname, 'enums')
-    const entityPath = path.join(__dirname, 'entities')
-    const componentPath = path.join(__dirname, 'components')
+    const generationPath = 'generated'
+
+    const enumPath = path.resolve(`./${generationPath}/enums`)
+    const entityPath = path.resolve(`./${generationPath}/entities`)
+    const componentPath = path.resolve(`./${generationPath}/components`)
 
     const existingImports = filePath
       ? fs
@@ -64,6 +68,7 @@ export class EntityGenerator {
     const [classEntity, enums] = this.generateClassEntity(schema, existingImports)
     if (!classEntity) return
 
+    // Components and Entities might have multiple enums
     if (enums.length) {
       fs.mkdirSync(enumPath, { recursive: true })
       enums.forEach(enumStr => {
@@ -74,18 +79,21 @@ export class EntityGenerator {
 
     // It's a Component
     if (schema.category) {
-      fs.mkdirSync(componentPath, { recursive: true })
+      if (!filePath) {
+        fs.mkdirSync(componentPath, { recursive: true })
+      }
       fs.writeFileSync(
-        path.join(componentPath, `src/components/${this.dotNotationToKebab(schema.uid)}.component.ts`),
+        filePath || path.join(componentPath, `${this.dotNotationToKebab(schema.uid)}.component.ts`),
         classEntity,
       )
       return
     }
 
+    // It's an Entity
     if (!filePath) {
       fs.mkdirSync(entityPath, { recursive: true })
     }
-    fs.writeFileSync(filePath || path.join(entityPath, `src/entities/${schema.apiID}.entity.ts`), classEntity)
+    fs.writeFileSync(filePath || path.join(entityPath, `${schema.apiID}.entity.ts`), classEntity)
   }
 
   generateAllEntitiesAndComponents(contentTypes: StrapiSchema[], components: StrapiSchema[]): void {
@@ -95,11 +103,11 @@ export class EntityGenerator {
 
   updateAllEntitiesAndComponents(contentTypes: StrapiSchema[], components: StrapiSchema[], paths: string[]): void {
     contentTypes.forEach(schema => {
-      const path = paths.find(p => p.includes(schema.apiID))
+      const path = paths.find(p => p.includes(`/${schema.apiID}.entity.ts`))
       this.generateClassEntityFile(schema, path)
     })
     components.forEach(schema => {
-      const path = paths.find(p => p.includes(schema.uid))
+      const path = paths.find(p => p.includes(`/${schema.uid}.component.ts`))
       this.generateClassEntityFile(schema, path)
     })
   }
@@ -180,34 +188,34 @@ export class EntityGenerator {
 
   private getTypeAnnotation(uid: string, attribute: StrapiAttribute, propertyName: string): string {
     switch (attribute.type) {
-      case 'boolean':
+      case AttributeType.Boolean:
         return 'boolean'
-      case 'datetime':
-      case 'integer':
-      case 'biginteger':
-      case 'decimal':
-      case 'float':
-      case 'number':
+      case AttributeType.DateTime:
+      case AttributeType.Integer:
+      case AttributeType.BigInteger:
+      case AttributeType.Decimal:
+      case AttributeType.Float:
+      case AttributeType.Number:
         return 'number'
-      case 'email':
-      case 'password':
-      case 'text':
-      case 'richtext':
-      case 'uid':
-      case 'json':
-      case 'string':
+      case AttributeType.Email:
+      case AttributeType.Password:
+      case AttributeType.Text:
+      case AttributeType.RichText:
+      case AttributeType.UID:
+      case AttributeType.Json:
+      case AttributeType.String:
         return 'string'
-      case 'date':
+      case AttributeType.Date:
         return 'Date'
-      case 'media':
+      case AttributeType.Media:
         return '{ url: string }'
-      case 'enumeration':
+      case AttributeType.Enumeration:
         return `${this.toPascalCase(this.getCollectionNameFromUid(uid))}${this.toPascalCase(propertyName)}`
-      case 'component':
+      case AttributeType.Component:
         return `${this.dotNotationToPascalCase(attribute.component)}${this.options.componentSuffix}`
-      case 'relation':
+      case AttributeType.Relation:
         return this.toClassType(attribute)
-      case 'dynamiczone':
+      case AttributeType.DynamicZone:
         return `[${attribute.components
           .map(c => `${this.dotNotationToPascalCase(c)}${this.options.componentSuffix}`)
           .join(', ')}]`
@@ -234,17 +242,17 @@ export class EntityGenerator {
     const property = this.toCamelCase(propertyName)
 
     switch (relationType) {
-      case 'oneToOne':
+      case RelationType.OneToOne:
         return `@OneToOne(() => ${propertyType})`
-      case 'oneToMany':
+      case RelationType.OneToMany:
         return `@OneToMany(() => ${propertyType}${
           attribute.inversedBy ? `, (${property}: ${propertyType}) => ${inversed}` : ''
         })`
-      case 'manyToOne':
+      case RelationType.ManyToOne:
         return `@ManyToOne(() => ${propertyType}${
           attribute.inversedBy ? `, (${property}: ${propertyType}) => ${inversed}` : ''
         })`
-      case 'manyToMany':
+      case RelationType.ManyToMany:
         return `@ManyToMany(() => ${propertyType}${
           attribute.inversedBy ? `, (${property}: ${propertyType}) => ${inversed}` : ''
         })`
@@ -254,18 +262,18 @@ export class EntityGenerator {
   }
 
   private convertToDecorators(attribute: StrapiAttribute, propertyName: string, typeAnnotation: string): string[] {
-    if (attribute.type === 'component') {
+    if (attribute.type === AttributeType.Component) {
       const { component, repeatable } = attribute
       return [`@Component('${component}', { repeatable: ${repeatable} })`]
     }
 
-    if (attribute.type === 'relation') {
+    if (attribute.type === AttributeType.Relation) {
       const { relation, target } = attribute
       const relationDecorator = this.mapRelationTypeToDecorator(relation, target, propertyName, attribute)
       return [`${relationDecorator}`]
     }
 
-    if (attribute.type === 'dynamiczone') {
+    if (attribute.type === AttributeType.DynamicZone) {
       return [
         `@DynamicZone({ components: [${attribute.components
           .map(c => `${this.dotNotationToPascalCase(c)}${this.options.componentSuffix}`)
@@ -281,7 +289,7 @@ export class EntityGenerator {
       default: defaultValue,
     }
 
-    if (type === 'enumeration') {
+    if (type === AttributeType.Enumeration) {
       fieldOptions = {
         ...fieldOptions,
         enum: typeAnnotation,
@@ -292,7 +300,7 @@ export class EntityGenerator {
       `@Field({ ${Object.entries(fieldOptions)
         .map(([key, value]) => {
           if (!value) return null
-          const valueStr = typeof value === 'boolean' ? value : `'${value}'`
+          const valueStr = typeof value === 'boolean' || key === 'enum' ? value : `'${value}'`
 
           return `${this.toCamelCase(key)}: ${valueStr}`
         })
@@ -310,6 +318,12 @@ export class EntityGenerator {
     return `export enum ${enumName} {\n${enumValuesStr}\n}`
   }
 
+  private generateClassName(isComponent: boolean, uid: string, apiID: string): string {
+    return isComponent
+      ? `${this.dotNotationToPascalCase(uid)}${this.options.componentSuffix}`
+      : `${this.toPascalCase(apiID)}${this.options.entitySuffix}`
+  }
+
   private generateClassEntity(schema: StrapiSchema, existingImports: string[]): [string, string[]] {
     const {
       uid,
@@ -321,9 +335,7 @@ export class EntityGenerator {
 
     const isComponent = !!category
 
-    const className = isComponent
-      ? `${this.dotNotationToPascalCase(uid)}${this.options.componentSuffix}`
-      : `${this.toPascalCase(apiID)}${this.options.entitySuffix}`
+    const className = this.generateClassName(isComponent, uid, apiID)
     const path = apiID // Use apiID as the path directly
     const pluginStr = plugin ? `  plugin: '${plugin}',\n` : ''
 
@@ -351,13 +363,14 @@ export class EntityGenerator {
     for (const [propertyName, attribute] of Object.entries(attributes)) {
       const optional = attribute.required ? '' : '?'
       const array =
-        attribute.repeatable || (attribute.type === 'relation' && attribute.relation?.toLowerCase().includes('many'))
+        attribute.repeatable ||
+        (attribute.type === AttributeType.Relation && attribute.relation?.toLowerCase().includes('many'))
           ? '[]'
           : ''
       const typeAnnotation = this.getTypeAnnotation(uid, attribute, propertyName)
       const decorators = this.options.decorate ? this.convertToDecorators(attribute, propertyName, typeAnnotation) : []
 
-      if (attribute.type === 'relation' || attribute.type === 'component') {
+      if (attribute.type === AttributeType.Relation || attribute.type === AttributeType.Component) {
         if (this.getApiIdFromTarget(attribute) === apiID) continue // Skip self reference
 
         const filePath = this.getFilePath(attribute, propertyName, isComponent)
@@ -368,7 +381,7 @@ export class EntityGenerator {
         }
       }
 
-      if (attribute.type === 'dynamiczone') {
+      if (attribute.type === AttributeType.DynamicZone) {
         attribute.components.forEach(component => {
           const filePath = `../components/${this.toKebab(component)}.component`
           const importStatement = `import { ${this.dotNotationToPascalCase(component)}${
@@ -381,7 +394,7 @@ export class EntityGenerator {
         })
       }
 
-      if (attribute.type === 'enumeration') {
+      if (attribute.type === AttributeType.Enumeration) {
         enums.push(this.generateEnum(uid, attribute, propertyName))
 
         const enumName = `${this.toPascalCase(this.getCollectionNameFromUid(uid))}${this.toPascalCase(propertyName)}`
@@ -396,13 +409,13 @@ export class EntityGenerator {
       lines.push(`  ${this.toCamelCase(propertyName)}${optional}: ${typeAnnotation}${array}\n`)
     }
 
-    lines.push(`}`)
-
     const propertyDecorators = this.getPropertyDecorators(lines)
     if (propertyDecorators.size) {
-      lines.splice(0, 0, `import { ${Array.from(propertyDecorators).join(', ')} } from '../decorator'`)
+      if (!lines.some(l => l.includes(`from '${packageName}'`))) {
+        lines.splice(0, 0, `import { ${Array.from(propertyDecorators).join(', ')} } from '${packageName}'`)
+      }
     }
 
-    return [lines.join('\n'), enums]
+    return [lines.join('\n').concat('}'), enums]
   }
 }

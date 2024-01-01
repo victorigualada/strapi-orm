@@ -8,7 +8,7 @@ export type FieldOptions = {
   required?: boolean
   unique?: boolean
   default?: unknown
-  enum?: string
+  enum?: InstanceType<ObjectType>
 }
 
 export function Field(): PropertyDecorator

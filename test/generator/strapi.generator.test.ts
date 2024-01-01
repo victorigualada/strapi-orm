@@ -1,7 +1,7 @@
 import fs from 'fs'
 
 import { EntityGenerator, GenerationOptions } from '../../src/generator/entity.generator'
-import { StrapiSchema } from '../../src/generator/strapi-schema.type'
+import { AttributeType, StrapiSchema } from '../../src/generator/strapi-schema.type'
 
 jest.mock('fs')
 
@@ -45,7 +45,7 @@ describe('EntityGenerator', () => {
         schema: {
           attributes: {
             name: {
-              type: 'string',
+              type: AttributeType.String,
               required: true,
               repeatable: false,
               default: null,
@@ -55,7 +55,7 @@ describe('EntityGenerator', () => {
       }
 
       const expectedClassNameSuffix = entitySuffix
-        ? typeof entitySuffix === 'string' || !entitySuffix
+        ? typeof entitySuffix === AttributeType.String || !entitySuffix
           ? entitySuffix
           : 'Entity'
         : ''
@@ -98,7 +98,7 @@ describe('EntityGenerator', () => {
         schema: {
           attributes: {
             name: {
-              type: 'string',
+              type: AttributeType.String,
               required: true,
               repeatable: false,
               default: null,
@@ -108,7 +108,7 @@ describe('EntityGenerator', () => {
       }
 
       const expectedClassNameSuffix = componentSuffix
-        ? typeof componentSuffix === 'string' || !componentSuffix
+        ? typeof componentSuffix === AttributeType.String || !componentSuffix
           ? componentSuffix
           : 'Component'
         : ''
@@ -144,7 +144,7 @@ describe('EntityGenerator', () => {
       schema: {
         attributes: {
           name: {
-            type: 'string',
+            type: AttributeType.String,
             required: true,
             repeatable: false,
             default: null,
@@ -165,14 +165,13 @@ describe('EntityGenerator', () => {
     // assert
     expect(readFileSyncMock).toHaveBeenCalledWith(expect.stringMatching(testEntityPath), expect.anything())
     expect(writeFileSyncMock).toHaveBeenCalledWith(
-      expect.stringContaining('example.component.ts'),
+      expect.stringContaining('../mock/test.entity.ts'),
       expect.stringContaining(existingImport),
     )
     expect(writeFileSyncMock).toHaveBeenCalledWith(
-      expect.stringContaining('example.component.ts'),
+      expect.stringContaining('../mock/test.entity.ts'),
       expect.stringContaining('@StrapiComponent'),
     )
-    expect(mkdirSyncMock).toHaveBeenCalled()
   })
 
   it.each`
@@ -227,7 +226,7 @@ describe('EntityGenerator', () => {
       schema: {
         attributes: {
           enumAttribute: {
-            type: 'enumeration',
+            type: AttributeType.Enumeration,
             enum: ['value-1', 'value-2'],
             required: true,
           },
@@ -265,7 +264,7 @@ describe('EntityGenerator', () => {
       schema: {
         attributes: {
           dynamicZoneAttr: {
-            type: 'dynamiczone',
+            type: AttributeType.DynamicZone,
             components: ['example.component1', 'example.component2'],
             required: true,
           },
@@ -295,7 +294,7 @@ describe('EntityGenerator', () => {
       schema: {
         attributes: {
           componentAttr: {
-            type: 'component',
+            type: AttributeType.Component,
             component: 'example.component',
             repeatable: false,
             required: true,
@@ -333,7 +332,7 @@ describe('EntityGenerator', () => {
         schema: {
           attributes: {
             [propertyName]: {
-              type: 'relation',
+              type: AttributeType.Relation,
               relation: relationType,
               inversedBy: 'example',
               target,
