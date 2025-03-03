@@ -4,8 +4,18 @@ on:
   pull_request:
     branches:
       - main
+    types:
+      - opened
+      - labeled
+      - unlabeled
 
 jobs:
+  check-label:
+    name: "Check PR Label"
+    uses: victorigualada/actions/block-if-label.yaml@main
+    with:
+      label: "requires-external-change"
+
   build-lint-test:
     uses: ./.github/workflows/build-lint-test.yml
     secrets: inherit
