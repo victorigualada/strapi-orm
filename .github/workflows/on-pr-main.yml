@@ -12,5 +12,6 @@ jobs:
       label: "bug"
 
   build-lint-test:
+    needs: check-label
     uses: ./.github/workflows/build-lint-test.yml
     secrets: inherit
