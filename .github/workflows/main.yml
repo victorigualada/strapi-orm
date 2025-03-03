@@ -5,7 +5,7 @@ on:
 
 jobs:
   check-label:
-    uses: victorigualada/actions/block-pr-if-label/block-if-label.yaml@main
+    uses: victorigualada/actions/.github/workflows/block-if-label.yaml@main
     with:
       label: "bug"
 
