@@ -14,6 +14,7 @@ jobs:
     uses: victorigualada/actions/.github/workflows/block-if-label.yaml@main
     with:
       label: "bug"
+    secrets: inherit
 
   build-lint-test:
     needs: check-label
