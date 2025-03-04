@@ -4,8 +4,19 @@ on:
   pull_request:
     branches:
       - main
+    types:
+      - opened
+      - labeled
+      - unlabeled
 
 jobs:
+  check-label:
+    uses: victorigualada/actions/.github/workflows/block-if-label.yaml@main
+    with:
+      label: "bug"
+    secrets: inherit
+
   build-lint-test:
+    needs: check-label
     uses: ./.github/workflows/build-lint-test.yml
     secrets: inherit
