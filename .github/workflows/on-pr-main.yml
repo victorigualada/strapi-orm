@@ -8,6 +8,7 @@ on:
       - opened
       - labeled
       - unlabeled
+      - edited
 
 jobs:
   check-label:
@@ -16,7 +17,14 @@ jobs:
       label: "bug"
     secrets: inherit
 
-  build-lint-test:
-    needs: check-label
-    uses: ./.github/workflows/build-lint-test.yml
-    secrets: inherit
+  jobs:
+    check-label:
+      uses: victorigualada/actions/.github/workflows/check-required-changes.yaml@main
+      with:
+        pr_description: ${{ github.event.pull_request.body }}
+      secrets: inherit
+
+#  build-lint-test:
+#    needs: check-label
+#    uses: ./.github/workflows/build-lint-test.yml
+#    secrets: inherit
