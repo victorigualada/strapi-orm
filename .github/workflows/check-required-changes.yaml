@@ -1,0 +1,22 @@
+name: Check Required Changes
+
+on:
+  workflow_call:
+    inputs:
+      pr_description:
+        description: "Pull request description"
+        required: true
+        type: string
+
+jobs:
+  check-pr-description:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for checked boxes under '## Required changes'
+        run: |
+          if echo "${{ inputs.pr_description }}" | awk '/## Required changes/{flag=1; next} /^##/{flag=0} flag' | grep -q '\[x\]'; then
+            echo "❌ PR contains checked required changes. Please address them before merging."
+            exit 1
+          else
+            echo "✅ No checked required changes found."
+          fi

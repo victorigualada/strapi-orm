@@ -4,8 +4,17 @@ on:
   pull_request:
     branches:
       - main
+    types:
+      - opened
+      - edited
 
 jobs:
+  check-label:
+    uses: .github/workflows/check-required-changes.yaml
+    with:
+      pr_description: ${{ github.event.pull_request.body }}
+    secrets: inherit
+
   build-lint-test:
     uses: ./.github/workflows/build-lint-test.yml
     secrets: inherit
