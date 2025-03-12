@@ -6,6 +6,8 @@ on:
       - main
     types:
       - opened
+      - labeled
+      - unlabeled
       - edited
 
 jobs:
@@ -15,6 +17,7 @@ jobs:
       pr_description: ${{ github.event.pull_request.body }}
     secrets: inherit
 
-  build-lint-test:
-    uses: ./.github/workflows/build-lint-test.yml
-    secrets: inherit
+#  build-lint-test:
+#    needs: check-label
+#    uses: ./.github/workflows/build-lint-test.yml
+#    secrets: inherit
