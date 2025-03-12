@@ -12,17 +12,10 @@ on:
 
 jobs:
   check-label:
-    uses: victorigualada/actions/.github/workflows/block-if-label.yaml@main
+    uses: victorigualada/actions/.github/workflows/check-required-changes.yaml@main
     with:
-      label: "bug"
+      pr_description: ${{ github.event.pull_request.body }}
     secrets: inherit
-
-  jobs:
-    check-label:
-      uses: victorigualada/actions/.github/workflows/check-required-changes.yaml@main
-      with:
-        pr_description: ${{ github.event.pull_request.body }}
-      secrets: inherit
 
 #  build-lint-test:
 #    needs: check-label
