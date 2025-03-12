@@ -9,10 +9,10 @@ on:
       - edited
 
 jobs:
-#  check-label:
-#    uses: ./.github/workflows/check-required-changes.yaml
-#    with:
-#      pr_description: ${{ github.event.pull_request.body }}
+  check-label:
+    uses: .github/workflows/check-required-changes.yaml
+    with:
+      pr_description: ${{ github.event.pull_request.body }}
 
   build-lint-test:
     uses: ./.github/workflows/build-lint-test.yml
