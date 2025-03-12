@@ -10,7 +10,7 @@ on:
 
 jobs:
   check-label:
-    uses: .github/workflows/check-required-changes.yaml@365c3c6175fd88d4f8d99f04c524ea17032abb79
+    uses: ./github/workflows/check-required-changes.yaml@365c3c6175fd88d4f8d99f04c524ea17032abb79
     with:
       pr_description: ${{ github.event.pull_request.body }}
     secrets: inherit
