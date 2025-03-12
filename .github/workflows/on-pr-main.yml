@@ -10,9 +10,10 @@ on:
 
 jobs:
   check-label:
-    uses: .github/workflows/check-required-changes.yaml
+    uses: victorigualada/actions/.github/workflows/check-required-changes.yaml@main
     with:
       pr_description: ${{ github.event.pull_request.body }}
+    secrets: inherit
 
   build-lint-test:
     uses: ./.github/workflows/build-lint-test.yml
